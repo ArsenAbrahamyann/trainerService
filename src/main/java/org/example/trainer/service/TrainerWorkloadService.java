@@ -2,6 +2,7 @@ package org.example.trainer.service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class TrainerWorkloadService {
 
     /**
      * Initializes a new instance of the TrainerWorkloadService.
+     *
      * @param workloadRepository Repository used for accessing and persisting workload data.
      */
     public TrainerWorkloadService(TrainerWorkloadRepository workloadRepository) {
@@ -32,6 +34,7 @@ public class TrainerWorkloadService {
     /**
      * Updates the training hours for a trainer according to the request.
      * An ADD action increases hours whereas a DELETE action decreases hours.
+     *
      * @param request Contains the details of the trainer and the training session.
      */
     public void updateTrainingHours(TrainerWorkloadRequest request) {
@@ -40,7 +43,8 @@ public class TrainerWorkloadService {
         Integer month = trainingDate.getMonthValue();
         Integer year = trainingDate.getYear();
 
-        Optional<TrainerWorkloadEntity> existingWorkload = workloadRepository.findByTrainerUsername(request.getTrainerUsername());
+        Optional<TrainerWorkloadEntity> existingWorkload = workloadRepository.findByTrainerUsername(
+                request.getTrainerUsername());
         if (existingWorkload.isEmpty() && request.getActionType().equalsIgnoreCase("DELETE")) {
             log.info("No workload found to delete for trainer: {}", request.getTrainerUsername());
             return;
@@ -60,12 +64,16 @@ public class TrainerWorkloadService {
         });
 
         if (request.getActionType().equalsIgnoreCase("ADD")) {
-            workload.setTotalTrainingDuration(workload.getTotalTrainingDuration() + request.getTrainingDuration());
-            log.info("Added duration; new total: {} for trainer: {}", workload.getTotalTrainingDuration(), request.getTrainerUsername());
+            workload.setTotalTrainingDuration(workload.getTotalTrainingDuration()
+                    + request.getTrainingDuration());
+            log.info("Added duration; new total: {} for trainer: {}", workload.getTotalTrainingDuration(),
+                    request.getTrainerUsername());
         } else if (request.getActionType().equalsIgnoreCase("DELETE")) {
-            int updatedDuration = Math.max(workload.getTotalTrainingDuration() - request.getTrainingDuration(), 0);
+            int updatedDuration = Math.max(workload.getTotalTrainingDuration()
+                    - request.getTrainingDuration(), 0);
             workload.setTotalTrainingDuration(updatedDuration);
-            log.info("Deleted duration; new total: {} for trainer: {}", workload.getTotalTrainingDuration(), request.getTrainerUsername());
+            log.info("Deleted duration; new total: {} for trainer: {}", workload.getTotalTrainingDuration(),
+                    request.getTrainerUsername());
         }
 
         workloadRepository.save(workload);
@@ -74,24 +82,35 @@ public class TrainerWorkloadService {
 
     /**
      * Retrieves the total training hours for a specific trainer by username.
+     *
      * @param trainerUsername Username of the trainer.
      * @return Map containing year-month as key and total training duration as value.
      */
     public TrainerWorkloadResponse getTrainingHours(String trainerUsername) {
         log.info("Retrieving training hours for trainer: {}", trainerUsername);
-        TrainerWorkloadEntity workload = workloadRepository.findByTrainerUsername(trainerUsername)
-                .orElseThrow(() -> new WorkloadException("Retrieving training hours for trainer: {}"
-                        + trainerUsername));
+
+        List<TrainerWorkloadEntity> workloadList = workloadRepository.findAllByTrainerUsername(trainerUsername);
+
+        if (workloadList.isEmpty()) {
+            throw new WorkloadException("No workload data found for trainer: "
+                    + trainerUsername);
+        }
+
         Map<Integer, Map<Integer, Integer>> workloadSummary = new HashMap<>();
-        workloadSummary
-                .computeIfAbsent(workload.getTrainingYear(), y -> new HashMap<>())
-                .put(workload.getTrainingMonth(), workload.getTotalTrainingDuration());
+
+        for (TrainerWorkloadEntity workload : workloadList) {
+            workloadSummary
+                    .computeIfAbsent(workload.getTrainingYear(), y -> new HashMap<>())
+                    .put(workload.getTrainingMonth(), workload.getTotalTrainingDuration());
+        }
+
+        TrainerWorkloadEntity firstRecord = workloadList.get(0);
 
         return new TrainerWorkloadResponse(
-                workload.getTrainerUsername(),
-                workload.getFirstName(),
-                workload.getLastName(),
-                workload.isActive(),
+                firstRecord.getTrainerUsername(),
+                firstRecord.getFirstName(),
+                firstRecord.getLastName(),
+                firstRecord.isActive(),
                 workloadSummary
         );
 
