@@ -3,7 +3,6 @@ package org.example.trainer.config;
 import javax.jms.ConnectionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -20,12 +19,10 @@ import org.springframework.jms.support.converter.MessageConverter;
 @Slf4j
 public class JmsConfig {
 
-    @Value("${spring.activemq.broker-url}")
-    String brokerUrl;
-    @Value("${spring.activemq.user}")
-    String brokerUsername;
-    @Value("${spring.activemq.password}")
-    String brokerPassword;
+    String brokerUrl = System.getenv("ACTIVEMQ_BROKER_URL");
+    String brokerUsername = System.getenv("ACTIVEMQ_USERNAME");
+    String brokerPassword = System.getenv("ACTIVEMQ_PASSWORD");
+
 
 
     /**
