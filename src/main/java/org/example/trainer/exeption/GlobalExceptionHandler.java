@@ -1,10 +1,8 @@
 package org.example.trainer.exeption;
 
-import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,9 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles exceptions arising from failures during workload updates.
-     * @param ex The {@link WorkloadException} encapsulating details of what went wrong during a workload update attempt.
-     * @return A {@link ResponseEntity} containing a detailed ErrorResponse indicating the failure.
+       * Handles exceptions arising from failures during workload updates.
      */
     @ExceptionHandler(WorkloadException.class)
     public ResponseEntity<ErrorResponse> handleWorkloadUpdateException(WorkloadException ex) {

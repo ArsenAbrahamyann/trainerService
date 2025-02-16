@@ -3,15 +3,17 @@ package org.example.trainer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableRetry
+@EnableJms
 public class TrainerServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TrainerServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TrainerServiceApplication.class, args);
+    }
 
 }
