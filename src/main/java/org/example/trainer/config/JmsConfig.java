@@ -1,19 +1,23 @@
 package org.example.trainer.config;
 
 import javax.jms.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
 
 /**
- * Configuration for setting up Java Message Service (JMS) with ActiveMQ as the message broker.
- * This class provides beans necessary for creating JMS connections and allows for message
- * sending and asynchronous message receiving through listeners.
+ * Configuration class for setting up Java Message Service (JMS) with ActiveMQ as the message broker.
+ * This class provides necessary beans for creating JMS connections, sending messages,
+ * and setting up message-driven listeners for asynchronous message processing.
  */
 @Configuration
+@Slf4j
 public class JmsConfig {
 
     @Value("${spring.activemq.broker-url}")
@@ -25,9 +29,9 @@ public class JmsConfig {
 
 
     /**
-     * Creates and configures a ConnectionFactory for use with the ActiveMQ broker.
-     * The ConnectionFactory is configured with broker URL, username, and password,
-     * which are injected via application properties.
+     * Creates and configures a {@link ConnectionFactory} to establish connections to the ActiveMQ broker.
+     * The connection is configured using the broker URL, username, and password, which are injected
+     * via application properties.
      *
      * @return a configured {@link ConnectionFactory} for ActiveMQ.
      */
@@ -35,17 +39,29 @@ public class JmsConfig {
     public ConnectionFactory connectionFactory() {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
         connectionFactory.setBrokerURL(brokerUrl);
-        connectionFactory.setPassword(brokerUsername);
-        connectionFactory.setUserName(brokerPassword);
+        connectionFactory.setUserName(brokerUsername);
+        connectionFactory.setPassword(brokerPassword);
         return connectionFactory;
     }
 
     /**
-     * Configures a {@link JmsTemplate} that is used for sending messages.
-     * The JmsTemplate is configured with a {@link ConnectionFactory} to establish
-     * connections to the ActiveMQ broker.
+     * Configures a {@link MessageConverter} that is responsible for converting messages to and from
+     * JMS message formats. The default converter used here is the {@link MappingJackson2MessageConverter},
+     * which supports converting Java objects to JSON and vice versa.
      *
-     * @param connectionFactory the injected {@link ConnectionFactory} bean.
+     * @return a configured {@link MessageConverter} for message conversion.
+     */
+    @Bean
+    public MessageConverter messageConverter() {
+        return new MappingJackson2MessageConverter();
+    }
+
+
+    /**
+     * Configures a {@link JmsTemplate} to send JMS messages to the ActiveMQ broker.
+     * The JmsTemplate is set up with a {@link ConnectionFactory} to establish connections to the broker.
+     *
+     * @param connectionFactory the {@link ConnectionFactory} bean used to create JMS connections.
      * @return a configured {@link JmsTemplate} for sending JMS messages.
      */
     @Bean
@@ -54,12 +70,11 @@ public class JmsConfig {
     }
 
     /**
-     * Configures a {@link DefaultJmsListenerContainerFactory} which sets up listener containers
-     * for message-driven POJOs with the MessageListener interface. The factory supports
-     * concurrent listeners.
+     * Configures a {@link DefaultJmsListenerContainerFactory} which is used to create listener containers
+     * for processing incoming JMS messages asynchronously. The factory is set to support concurrent listeners
+     * with a concurrency range of 3 to 10.
      *
-     * @param connectionFactory the injected {@link ConnectionFactory} bean used to establish
-     *                          connections to the ActiveMQ broker.
+     * @param connectionFactory the {@link ConnectionFactory} bean used to establish JMS connections.
      * @return a configured {@link DefaultJmsListenerContainerFactory} for asynchronous message processing.
      */
     @Bean

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.example.trainer.dto.request.TrainerWorkloadRequest;
-import org.example.trainer.dto.response.TrainerWorkloadResponse;
+import org.example.trainer.dto.request.TrainerWorkloadRequestDto;
+import org.example.trainer.dto.response.TrainerWorkloadResponseDto;
 import org.example.trainer.entity.TrainerWorkloadEntity;
 import org.example.trainer.exeption.WorkloadException;
 import org.example.trainer.repository.TrainerWorkloadRepository;
@@ -37,7 +37,7 @@ public class TrainerWorkloadService {
      *
      * @param request Contains the details of the trainer and the training session.
      */
-    public void updateTrainingHours(TrainerWorkloadRequest request) {
+    public void updateTrainingHours(TrainerWorkloadRequestDto request) {
         log.info("Updating training hours for trainer: {}", request.getTrainerUsername());
         LocalDate trainingDate = request.getTrainingDate();
         Integer month = trainingDate.getMonthValue();
@@ -81,32 +81,39 @@ public class TrainerWorkloadService {
     }
 
     /**
-     * Retrieves the total training hours for a specific trainer by username.
+     * Retrieves the total training hours for a specific trainer and month.
      *
      * @param trainerUsername Username of the trainer.
-     * @return Map containing year-month as key and total training duration as value.
+     * @param month Month for which the training hours are needed.
+     * @return TrainerWorkloadResponseDto containing training duration details.
      */
-    public TrainerWorkloadResponse getTrainingHours(String trainerUsername) {
-        log.info("Retrieving training hours for trainer: {}", trainerUsername);
+    public TrainerWorkloadResponseDto getTrainingHoursForMonth(String trainerUsername, Integer month) {
+        log.info("Retrieving training hours for trainer: {} for month: {}", trainerUsername, month);
 
         List<TrainerWorkloadEntity> workloadList = workloadRepository.findAllByTrainerUsername(trainerUsername);
 
         if (workloadList.isEmpty()) {
-            throw new WorkloadException("No workload data found for trainer: "
-                    + trainerUsername);
+            throw new WorkloadException("No workload data found for trainer: " + trainerUsername);
         }
 
         Map<Integer, Map<Integer, Integer>> workloadSummary = new HashMap<>();
 
         for (TrainerWorkloadEntity workload : workloadList) {
-            workloadSummary
-                    .computeIfAbsent(workload.getTrainingYear(), y -> new HashMap<>())
-                    .put(workload.getTrainingMonth(), workload.getTotalTrainingDuration());
+            int workloadMonth = workload.getTrainingMonth();
+            if (workloadMonth == month) {
+                workloadSummary.computeIfAbsent(workload.getTrainingYear(), y -> new HashMap<>())
+                        .put(workloadMonth, workload.getTotalTrainingDuration());
+            }
+        }
+
+        if (workloadSummary.isEmpty()) {
+            throw new WorkloadException("No workload data found for trainer: " + trainerUsername
+                    + " for month: " + month);
         }
 
         TrainerWorkloadEntity firstRecord = workloadList.get(0);
 
-        return new TrainerWorkloadResponse(
+        return new TrainerWorkloadResponseDto(
                 firstRecord.getTrainerUsername(),
                 firstRecord.getFirstName(),
                 firstRecord.getLastName(),

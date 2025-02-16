@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.example.trainer.dto.request.TrainerWorkloadRequest;
+import org.example.trainer.dto.request.TrainerWorkloadRequestDto;
 import org.example.trainer.entity.TrainerWorkloadEntity;
 import org.example.trainer.repository.TrainerWorkloadRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +25,8 @@ public class TrainerWorkloadServiceTests {
     @InjectMocks
     private TrainerWorkloadService trainerWorkloadService;
 
-    private TrainerWorkloadRequest addRequest;
-    private TrainerWorkloadRequest deleteRequest;
+    private TrainerWorkloadRequestDto addRequest;
+    private TrainerWorkloadRequestDto deleteRequest;
 
     private TrainerWorkloadEntity trainerWorkloadEntity;
 
@@ -34,11 +34,11 @@ public class TrainerWorkloadServiceTests {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        addRequest = new TrainerWorkloadRequest("trainer1",
+        addRequest = new TrainerWorkloadRequestDto("trainer1",
                 "John", "Doe", true,
                 LocalDate.of(2025, 2, 1), 10, "ADD");
 
-        deleteRequest = new TrainerWorkloadRequest("trainer1",
+        deleteRequest = new TrainerWorkloadRequestDto("trainer1",
                 "John", "Doe", true,
                 LocalDate.of(2025, 2, 1), 5, "DELETE");
 

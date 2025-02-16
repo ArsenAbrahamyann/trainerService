@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerWorkloadResponse {
+public class TrainerWorkloadResponseDto {
 
     private String trainerUsername;
     private String firstName;
