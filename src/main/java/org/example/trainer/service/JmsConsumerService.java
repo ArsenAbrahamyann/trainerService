@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.example.trainer.dto.request.TrainerWorkloadRequestDto;
 import org.example.trainer.dto.response.TrainerWorkloadResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,7 @@ public class JmsConsumerService {
     public void receiveTrainingUpdate(String message) {
         log.info("Received raw message: {}", message);
 
-        if (message
-                == null
-                || message.trim().isEmpty()) {
+        if (StringUtils.isBlank(message)) {
             log.error("Received an empty or null message! Ignoring...");
             return;
         }

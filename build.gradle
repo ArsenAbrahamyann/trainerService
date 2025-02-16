@@ -43,7 +43,7 @@ dependencies {
 	implementation 'org.apache.activemq:activemq-core:5.7.0'
 	implementation 'org.apache.activemq:activemq-client:5.16.3'
 
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0") // Adjust version as needed
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0")
 
 	implementation 'org.springframework.retry:spring-retry:2.0.11'
 
