@@ -1,14 +1,9 @@
 server:
   port: 8081
 spring:
-  datasource:
-    url: jdbc:h2:mem:workloadDB
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-
+  data:
+    mongodb:
+      uri: mongodb://mongo:27017/trainerDB
 eureka:
   client:
     serviceUrl:
@@ -16,7 +11,8 @@ eureka:
   instance:
     preferIpAddress: true
 logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%thread] [%X{transactionId}] %-5level %logger{36} - %msg%n"
   level:
-    level:
-    root: info
-    org.hibernate.orm.jdbc.bind: trace
+   root: info
+   org.hibernate.orm.jdbc.bind: trace

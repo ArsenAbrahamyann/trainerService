@@ -1,32 +1,39 @@
 package org.example.trainer.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection = "trainer_workloads")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class TrainerWorkloadEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
+    @Indexed(unique = true)
     private String trainerUsername;
-    private String lastName;
+
+    @Indexed
     private String firstName;
+
+    @Indexed
+    private String lastName;
+
     private boolean isActive;
 
-    private Integer trainingYear;
-    private Integer trainingMonth;
-    private Integer totalTrainingDuration;
+    private Map<Integer, Map<Integer, Integer>> trainingSummary = new HashMap<>();
 
 }
