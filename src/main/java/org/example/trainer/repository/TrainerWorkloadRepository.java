@@ -1,12 +1,11 @@
 package org.example.trainer.repository;
 
-import java.util.List;
 import java.util.Optional;
 import org.example.trainer.entity.TrainerWorkloadEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TrainerWorkloadRepository extends JpaRepository<TrainerWorkloadEntity, Long> {
+@Repository
+public interface TrainerWorkloadRepository extends MongoRepository<TrainerWorkloadEntity, String> {
     Optional<TrainerWorkloadEntity> findByTrainerUsername(String trainerUsername);
-
-    List<TrainerWorkloadEntity> findAllByTrainerUsername(String trainerUsername);
 }
