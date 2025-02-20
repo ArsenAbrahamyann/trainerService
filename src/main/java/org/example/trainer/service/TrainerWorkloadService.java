@@ -63,15 +63,19 @@ public class TrainerWorkloadService {
         Integer year = request.getTrainingDate().getYear();
         Integer month = request.getTrainingDate().getMonthValue();
 
-        workload.getTrainingSummary().computeIfAbsent(year, y -> new HashMap<>())
-                .merge(month, request.getTrainingDuration(), (existing, newDuration) -> {
-                    if (request.getActionType().equalsIgnoreCase("ADD")) {
-                        return existing + newDuration;
-                    } else if (request.getActionType().equalsIgnoreCase("DELETE")) {
-                        return Math.max(existing - newDuration, 0);
-                    }
-                    return existing;
-                });
+        Map<Integer, Map<Integer, Integer>> trainingSummary = workload.getTrainingSummary();
+
+        trainingSummary.computeIfAbsent(year, y -> new HashMap<>());
+
+        Map<Integer, Integer> monthlySummary = trainingSummary.get(year);
+        int existingDuration = monthlySummary.getOrDefault(month, 0);
+        int newDuration = request.getTrainingDuration();
+
+        if ("ADD".equalsIgnoreCase(request.getActionType())) {
+            monthlySummary.put(month, existingDuration + newDuration);
+        } else if ("DELETE".equalsIgnoreCase(request.getActionType())) {
+            monthlySummary.put(month, Math.max(existingDuration - newDuration, 0));
+        }
 
         workloadRepository.save(workload);
         log.info("Workload updated successfully for trainer: {}", request.getTrainerUsername());
