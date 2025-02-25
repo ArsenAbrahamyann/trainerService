@@ -15,12 +15,16 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
 
+/**
+ * Configuration class for setting up TestContainers for integration testing.
+ * This class initializes MongoDB and ActiveMQ containers and provides necessary beans
+ * for testing the application.
+ */
 @Configuration
 @EnableJms
 public class TestContainerConfiguration {
@@ -40,21 +44,43 @@ public class TestContainerConfiguration {
         System.setProperty("ACTIVEMQ_PASSWORD", "admin");
     }
 
+    /**
+     * Provides the MongoDB test container bean.
+     *
+     * @return MongoDBContainer instance.
+     */
     @Bean
     public MongoDBContainer mongoDbcontainer() {
         return mongoDBContainer;
     }
 
+    /**
+     * Provides the ActiveMQ connection factory bean.
+     *
+     * @return ActiveMQConnectionFactory instance.
+     */
     @Bean
     public ConnectionFactory connectionFactory() {
         return new ActiveMQConnectionFactory(System.getProperty("spring.activemq.broker-url"));
     }
 
+    /**
+     * Provides the JMS template for message handling.
+     *
+     * @param connectionFactory The ActiveMQ connection factory.
+     * @return JmsTemplate instance.
+     */
     @Bean
     public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
         return new JmsTemplate(connectionFactory);
     }
 
+
+    /**
+     * Configures the ObjectMapper bean for JSON processing.
+     *
+     * @return Configured ObjectMapper instance.
+     */
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper()
@@ -62,12 +88,21 @@ public class TestContainerConfiguration {
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-
-    @Bean
+    /**
+     * Provides a mock TrainerWorkloadRepository bean for testing.
+     *
+     * @return Mocked TrainerWorkloadRepository instance.
+     */
+    @Bean(name = "mockTrainerWorkloadRepository")
     public TrainerWorkloadRepository trainerWorkloadRepository() {
         return Mockito.mock(TrainerWorkloadRepository.class);
     }
 
+    /**
+     * Allows overriding bean definitions in the Spring context.
+     *
+     * @return BeanDefinitionRegistryPostProcessor instance.
+     */
     @Bean
     public static BeanDefinitionRegistryPostProcessor allowBeanDefinitionOverriding() {
         return new BeanDefinitionRegistryPostProcessor() {
@@ -81,5 +116,14 @@ public class TestContainerConfiguration {
                 // No processing needed
             }
         };
+    }
+
+    /**
+     * Stops the test containers after all tests are completed.
+     */
+    @AfterClass
+    public static void tearDown() {
+        mongoDBContainer.stop();
+        activeMq.stop();
     }
 }

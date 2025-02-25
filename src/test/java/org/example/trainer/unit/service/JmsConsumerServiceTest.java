@@ -1,4 +1,4 @@
-package org.example.trainer.unitTesting.service;
+package org.example.trainer.unit.service;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;

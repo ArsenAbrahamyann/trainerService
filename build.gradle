@@ -88,8 +88,7 @@ tasks.named('test') {
 
 
 checkstyle {
-	//u
-	ignoreFailures = true
+	ignoreFailures = false
 	maxWarnings = 0
 	configFile = rootProject.file("config/checkstyle/checkstyle.xml")
 }

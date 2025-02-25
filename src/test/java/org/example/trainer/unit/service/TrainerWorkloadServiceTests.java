@@ -1,4 +1,4 @@
-package org.example.trainer.unitTesting.service;
+package org.example.trainer.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

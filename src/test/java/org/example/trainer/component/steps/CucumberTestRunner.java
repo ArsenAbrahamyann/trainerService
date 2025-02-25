@@ -6,10 +6,9 @@ import io.cucumber.spring.CucumberContextConfiguration;
 import org.example.trainer.config.TestContainerConfiguration;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-//@CucumberContextConfiguration
+@CucumberContextConfiguration
 @ContextConfiguration(classes = TestContainerConfiguration.class)
 @AutoConfigureMockMvc
 @RunWith(Cucumber.class)
