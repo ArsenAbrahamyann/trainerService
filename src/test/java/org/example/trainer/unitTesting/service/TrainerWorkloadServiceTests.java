@@ -1,4 +1,4 @@
-package org.example.trainer.service;
+package org.example.trainer.unitTesting.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.example.trainer.dto.request.TrainerWorkloadRequestDto;
 import org.example.trainer.entity.TrainerWorkloadEntity;
 import org.example.trainer.repository.TrainerWorkloadRepository;
+import org.example.trainer.service.TrainerWorkloadService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

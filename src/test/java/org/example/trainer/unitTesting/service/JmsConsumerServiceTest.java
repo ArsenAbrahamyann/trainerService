@@ -1,4 +1,4 @@
-package org.example.trainer.service;
+package org.example.trainer.unitTesting.service;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import org.example.trainer.dto.request.TrainerWorkloadRequestDto;
+import org.example.trainer.service.JmsConsumerService;
+import org.example.trainer.service.TrainerWorkloadService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
